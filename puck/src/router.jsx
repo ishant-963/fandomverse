@@ -12,6 +12,7 @@ import WikiArticlePage from "./pages/WikiArticlePage.jsx";
 import LibraryPage from "./pages/LibraryPage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import CyberfictionPage from "./pages/CyberfictionPage.jsx";
+import CyberfictionScrollPage from "./pages/CyberfictionScrollPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 export const router = createBrowserRouter([
@@ -115,10 +116,13 @@ export const router = createBrowserRouter([
       { path: "media/:slug", element: <MediaDetailPage /> },
       { path: "articles/:slug", element: <WikiArticlePage /> },
       { path: "cyberfiction", element: <CyberfictionPage /> },
+      { path: "cyberfiction/scroll", element: <CyberfictionScrollPage /> },
       { path: "library", element: <LibraryPage /> },
       { path: "about", element: <AboutPage /> },
       { path: "search", element: <Navigate to="/explore" replace /> },
       { path: "*", element: <NotFoundPage /> },
     ]
   }
-]);
+], {
+  basename: import.meta.env.BASE_URL
+});

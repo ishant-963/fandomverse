@@ -1,10 +1,10 @@
 :root {
   /* Loreverse Curatorial White & Gold Design System */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #FAF9F6;
+  --bg-secondary: #FFFFFF;
   --bg-surface: #FFFFFF;
-  --bg-surface-hover: #F8F7F2;
-  --bg-tertiary: #F3EFE6;
+  --bg-surface-hover: #FAFAFA;
+  --bg-tertiary: #F7F7F7;
 
   --text-primary: #242424;
   --text-secondary: #66635B;

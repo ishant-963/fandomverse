@@ -2,36 +2,37 @@ import React, { createContext, useContext, useReducer, useCallback, useState } f
 
 /**
  * =============================================================================
- * CENTRAL PROJECT DATA & STATE STORE
- * Assimilates all configurations, universes, characters, media, articles,
- * queries, and plain React Context/hooks into a single beginner-friendly file.
- *
- * HOW THIS WORKS (for beginners):
- * ───────────────────────────────
- * Instead of Zustand (an external library), we use React's built-in tools:
- *
+
  *   1. createContext()  → creates a "mailbox" that child components can read
  *   2. useContext()     → lets any child component read from that mailbox
  *   3. useReducer()     → like useState but better for complex state changes
  *   4. useCallback()    → prevents unnecessary re-renders
  *
- * We define two "Providers" at the bottom of this file:
- *   • LibraryProvider  → wraps the app so any component can bookmark items
- *   • SearchProvider   → wraps the app so any component can open/close search
- *
- * Then we export custom hooks (useLibrary, useSearch) that components call
- * to read state and trigger actions. It's the same idea as Zustand, just
- * with plain React.
+ * 
  * =============================================================================
  */
 
-// 1. SITE CONFIGURATION
+// =============================================================================
+// SECTION 1: GLOBAL SITE CONFIGURATION (siteConfig)
+// What this does:
+//   • Defines the website's name, tagline, description, and editorial metadata.
+//   • Configures main navigation links (Explore, Universes, Cinema, Anime, Cyberfiction, etc.).
+//   • Sets up all media categories (movies, series, anime, manga, manhwa, novels, books).
+// Where it's used:
+//   • Navbar.jsx, Footer.jsx, HomePage.jsx, SearchModal.jsx
+// =============================================================================
+const BASE_URL = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const resolveAsset = (path) => `${BASE_URL}${path.replace(/^\/+/, "")}`;
+
 export const siteConfig = {
-  "name": "Loreverse",
+  "name": "FANDOMVERSE",
   "tagline": "The Multi-Universe Wiki & Entertainment Discovery Archive",
   "description": "An interconnected encyclopedia uniting cinematic universes, anime, manga, novels, and fictional lore.",
   "author": "Loreverse Editorial Board",
-  "version": "1.0.0",
+  
   "navigation": [
     {
       "label": "Explore",
@@ -66,6 +67,24 @@ export const siteConfig = {
       "path": "/library"
     }
   ],
+// =============================================================================
+// 
+// ─────────────────────────────────────────────────────────────────────────────
+// This array defines all the storytelling mediums supported across the app.
+// It powers the category portal grids, navigation links, and filter pills.
+//
+// EACH PROPERTY IN A MEDIA CATEGORY:
+//   • "id":    The unique format code (e.g. "movie", "series", "anime", "manga",
+//              "manhwa", "novel", "cyberfiction").
+//              CRITICAL: This matches `media.type` in `mediaData` so the code
+//              can filter works by medium: mediaData.filter(m => m.type === cat.id).
+//   • "label": The user-facing display name shown on page titles and buttons
+//              (e.g., "TV Series", "Manhwa", "Webnovels").
+//   • "path":  The browser URL route where this category lives (e.g., "/movies",
+//              "/anime"), configured in router.jsx and loaded by MediaDiscoveryPage.
+//   • "icon":  The icon name corresponding to an SVG component in icons.jsx
+//              (e.g., "Film", "Tv", "Sparkles", "BookOpen", "Layers", "Scroll").
+// =============================================================================
   "mediaCategories": [
     {
       "id": "movie",
@@ -122,7 +141,15 @@ export const siteConfig = {
   }
 };
 
-// 2. CONTINUITY TYPES & UNIVERSE CONFIG
+// =============================================================================
+// SECTION 2: CANON CONTINUITY & UNIVERSE THEMING (continuityTypes, universeConfig)
+// What this does:
+//   • continuityTypes: Categorizes canon status (Prime Canon, Cinematic, Expanded, etc.).
+//   • universeConfig: Maps display names, canon types, and signature brand colors
+//     for each major universe (MCU, DC, Star Wars, Wizarding World, Solo Leveling, Cyberfiction).
+// Where it's used:
+//   • UniverseCard.jsx, UniversePage.jsx, TimelineView.jsx, SearchModal.jsx
+// =============================================================================
 export const continuityTypes = {
   "CANON": "Prime Canon",
   "CINEMATIC": "Cinematic Continuity",
@@ -151,7 +178,7 @@ export const universeConfig = {
     "continuity": "Prime Canon",
     "accentColor": "#B89545"
   },
-  "solo-leveling": {
+  "sol": {
     "displayName": "Solo Leveling / Shadow Monarch Realm",
     "continuity": "Prime Canon",
     "accentColor": "#92702C"
@@ -178,7 +205,42 @@ export const universeConfig = {
   }
 };
 
-// 3. CURATED UNIVERSES DATA
+// =============================================================================
+// SECTION 3: CURATED UNIVERSES DATABASE (universesData)
+// What this does:
+//   • Master array containing all indexed fictional dimensions and continuities.
+// Where it's used:
+//   • HomePage.jsx, UniverseListPage.jsx, UniversePage.jsx, CyberfictionPage.jsx, SearchModal.jsx
+//
+// WHAT EACH PROPERTY IN A UNIVERSE OBJECT IS FOR:
+// ─────────────────────────────────────────────────────────────────────────────
+//   • "id":        Unique relational primary key (e.g. "mcu", "solo-leveling").
+//                  Foreign keys in `charactersData` and `mediaData` point to this
+//                  via `universeId: "mcu"`.
+//   • "slug":      Clean, human-readable URL identifier (e.g. "marvel-cinematic-universe").
+//                  Used in the browser address bar: "/universes/marvel-cinematic-universe".
+//   • "name":      Official name of the fictional universe.
+//   • "creator":   The author, mangaka, or studio that created the franchise.
+//   • "debutYear": Year the first canonical story or film premiered.
+//   • "category":  The primary medium classification (e.g. "Comics & Cinema", "Manhwa").
+//   • "tagline":   A concise 1-sentence hook capturing the core premise.
+//   • "description": Comprehensive editorial worldbuilding summary.
+//   • "bannerImage": High-resolution wallpaper shown as the universe page header backdrop.
+//   • "factions":  WHAT FACTIONS ARE FOR:
+//                  In-universe alliances, secret societies, guilds, and armies.
+//                  Contains:
+//                    - "name": e.g. "Cyberfield Pioneers", "The Avengers", "Shadow Army"
+//                    - "description": their creed, leadership, and role in world events
+//   • "timeline":  WHAT TIMELINE IS FOR:
+//                  The chronological history and canonical milestone events!
+//                  Rendered by <TimelineView /> on UniversePage.jsx as a visual
+//                  history track showing how the universe evolved across eras.
+//                  Contains:
+//                    - "year": chronological marker (e.g. "Genesis", "Year 2008", "Epoch 1")
+//                    - "event": pivotal lore milestone that took place at that date
+//   • "featured":  Boolean (true/false) — if true, displayed in the HomePage top spotlight.
+//   • "mediaCount" & "characterCount": Quick summary badges displayed on UniverseCard.
+// =============================================================================
 export const universesData = [
   {
     "id": "cyberfiction",
@@ -231,7 +293,7 @@ export const universesData = [
     "category": "Cinematic Universe",
     "tagline": "Earth's Mightiest Heroes and the Multiverse Saga.",
     "description": "An American media franchise and shared universe centered on a series of superhero films and television series produced by Marvel Studios. The franchise has expanded to include comic books, short films, digital series, and television series exploring heroes across space, time, and alternate dimensions.",
-    "bannerImage": "https://images.unsplash.com/photo-1635863138275-d9b33299680b?auto=format&fit=crop&w=1400&q=80",
+    "bannerImage": "https://static.wikia.nocookie.net/marvelcinematicuniverse/images/1/1a/Marvel_Cinematic_Universe.png/revision/latest?cb=20160529102452",
     "factions": [
       {
         "name": "The Avengers",
@@ -335,7 +397,7 @@ export const universesData = [
     "category": "Manhwa & Webnovel",
     "tagline": "Arise. The awakening of the world's weakest hunter.",
     "description": "A South Korean web novel written by Chugong and illustrated by DUBU. Set in a world where mysterious 'Gates' connect the human realm with dungeons full of monsters, certain humans awakened superhuman powers to combat them. Sung Jinwoo, notoriously known as the Weakest Hunter, is chosen by an enigmatic 'System' granting him unprecedented leveling capabilities.",
-    "bannerImage": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1400&q=80",
+    "bannerImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBijI-bu8IShgKNV69f2ALUn_XfND4qmgNz9v7RD1Q6nHQ0856gHvUCsqXRKuqA3Vgt2atCCQQpMSyuN3THl0zqIrLunGQ9L0uhCord0M&s=10",
     "factions": [
       {
         "name": "Shadow Army",
@@ -524,8 +586,138 @@ export const universesData = [
   }
 ];
 
-// 4. CURATED CHARACTERS DATA (3D models removed)
+// =============================================================================
+// SECTION 4: CHARACTERS & 3D CODEX DATABASE (charactersData)
+// What this does:
+//   • Master array of all fictional heroes, villains, monarchs, and deities.
+// Where it's used:
+//   • CharacterListPage.jsx, CharacterPage.jsx (3D & stats view),
+//     HomePage.jsx (Character Codex), UniversePage.jsx, SearchModal.jsx
+//
+// WHAT EACH PROPERTY IN A CHARACTER OBJECT IS FOR:
+// ─────────────────────────────────────────────────────────────────────────────
+//   • "id" & "slug": Unique ID and URL slug used for routing ("/characters/:slug").
+//   • "name" & "realName": Hero codename vs civilian/original birth name.
+//   • "universeId":  Foreign key connecting the character to their home universe.
+//   • "aliases":     Monikers, titles, and epithets they are known by in lore.
+//   • "species":     Species taxonomy (e.g. "Human", "Shadow Monarch", "Saiyan").
+//   • "affiliations": Teams, guilds, or organizations they serve or lead.
+//   • "portrait" & "backgroundImage": High-res character art and backdrop wallpaper.
+//   • "weapons":     Signature gear, cosmic relics, armor, and divine armaments.
+//   • "abilities":   List of superhuman powers, martial techniques, and spells.
+//   • "weaknesses":  Psychological traumas, energy exhaustion limits, or fatal flaws.
+//   • "biography":   Editorial narrative tracing origin, key battles, and destiny.
+//   • "relationships": Allied bonds, mentors, rivals, romantic partners, and family.
+//   • "appearances": Chronological listing of movies, manga volumes, or games they appear in.
+// =============================================================================
 export const charactersData = [
+  {
+    id: "spider-man",
+    slug: "spider-man-peter-parker",
+    name: "Spider-Man",
+    realName: "Peter Parker",
+    universeId: "mcu",
+    universeName: "Marvel Cinematic Universe",
+    localModel: "/models/spider_man.glb",
+    modelConfig: {
+      cameraOrbit: "0deg 75deg 4.2m",
+      cameraTarget: "0m 0.95m 0m",
+      fieldOfView: "42deg",
+      minCameraOrbit: "auto auto 2m",
+      maxCameraOrbit: "auto auto 8m",
+      autoplay: true,
+      animationName: "Armature|Armature|hero_spiderman01_S08@idle|Base Layer"
+    },
+    aliases: [
+      "Your Friendly Neighborhood Spider-Man",
+      "The Web-Slinger"
+    ],
+
+    portrait: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSh3-DxoDNwLgGFx0v50cQvveIh6cTQje6T72Qz707k5Hff-n3ADCvLp9pJ&s=10",
+    backgroundImage: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80",
+
+    species: "Human",
+    affiliations: ["Avengers"],
+    firstAppearance: "Captain America: Civil War (2016)",
+    occupation: "Student and Superhero",
+
+    stats: {
+      power: 80,
+      intelligence: 90,
+      durability: 75,
+      speed: 95,
+      combat: 85
+    },
+
+    biography: "Peter Parker is a young superhero who protects New York City using his spider-like abilities, agility, intelligence, and web-shooters.",
+
+    abilities: [
+      "Wall-Crawling",
+      "Spider-Sense",
+      "Superhuman Strength",
+      "Enhanced Agility",
+      "Web-Slinging"
+    ],
+
+    weapons: [
+      {
+        name: "Web-Shooters",
+        type: "Gadget",
+        desc: "Devices that launch artificial webbing."
+      }
+    ],
+
+    weaknesses: [
+      "Limited experience",
+      "Human vulnerability"
+    ],
+
+    relationships: [
+      {
+        name: "Tony Stark",
+        relation: "Mentor"
+      }
+    ],
+
+    slides: [
+      {
+        title: "Queens & Manhattan Web-Slinging",
+        subtitle: "The Friendly Neighborhood Guardian",
+        image: "https://images.unsplash.com/photo-1635863138275-d9b33299680b?auto=format&fit=crop&w=1400&q=80",
+        tag: "PATROL SECTOR",
+        caption: "Soaring between New York skyscrapers with homemade web-fluid and acrobatic precision to protect every citizen in need."
+      },
+      {
+        title: "Stark-Upgraded Tech & Iron Spider Suit",
+        subtitle: "Advanced Nanotech Armor",
+        image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1400&q=80",
+        tag: "WEAPONRY & GEAR",
+        caption: "Equipped with titanium-alloy waldoes, heads-up tactical HUD, and advanced parachute webbing designed by mentor Tony Stark."
+      },
+      {
+        title: "The Battle of Earth (2023)",
+        subtitle: "Reunion & Cosmic Defense",
+        image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1400&q=80",
+        tag: "ICONIC MILESTONE",
+        caption: "Emerging from the Titan sling-ring portal alongside Doctor Strange and the Guardians to fight side-by-side with the Avengers."
+      }
+    ],
+
+    appearances: [
+      {
+        id: "spider-man-civil-war",
+        title: "Captain America: Civil War",
+        year: 2016,
+        type: "Movie"
+      },
+      {
+        id: "spider-man-homecoming",
+        title: "Spider-Man: Homecoming",
+        year: 2017,
+        type: "Movie"
+      }
+    ]
+  },
   {
     "id": "iron-man",
     "slug": "iron-man-tony-stark",
@@ -539,7 +731,7 @@ export const charactersData = [
       "Mechanic",
       "Iron Knight"
     ],
-    "portrait": "https://images.unsplash.com/photo-1635863138275-d9b33299680b?auto=format&fit=crop&w=600&q=80",
+    "portrait": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSIHwPf9IyD8QdQqO5s8SPOos7Iy5Mpqp1p9K0tDe15w&s=10",
     "backgroundImage": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80",
     "species": "Human (Cybernetically Enhanced)",
     "affiliations": [
@@ -559,6 +751,14 @@ export const charactersData = [
       "combat": 84
     },
     "localModel": "/models/iron_man.glb",
+    "modelConfig": {
+      "cameraOrbit": "0deg 75deg 4.4m",
+      "cameraTarget": "0m 1.15m 0m",
+      "fieldOfView": "41deg",
+      "minCameraOrbit": "auto auto 1.5m",
+      "maxCameraOrbit": "auto auto 8m",
+      "autoplay": true
+    },
 
     "slides": [
       {
@@ -695,7 +895,7 @@ export const charactersData = [
       "Dark Lord of the Sith",
       "Supreme Commander"
     ],
-    "portrait": "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?auto=format&fit=crop&w=600&q=80",
+    "portrait": "https://static.wikia.nocookie.net/battlefront/images/0/0a/Battlefront_Vader.jpg/revision/latest?cb=20151022170631",
     "backgroundImage": "https://images.unsplash.com/photo-1518331647614-7a1f04cd34cf?auto=format&fit=crop&w=1600&q=80",
     "species": "Human (Cybernetic Sith Lord)",
     "affiliations": [
@@ -831,7 +1031,7 @@ export const charactersData = [
       "Player of the System",
       "S-Rank Hunter"
     ],
-    "portrait": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
+    "portrait": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ1b-ZiWOUcIfHZvEeP8fFPr4TCbcmJ26cq4ZkOQrn8w&s=10",
     "backgroundImage": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80",
     "species": "Human / Greater Sovereign (Shadow Monarch)",
     "affiliations": [
@@ -853,21 +1053,21 @@ export const charactersData = [
       {
         "title": "The Double Dungeon & The Cartenon Temple",
         "subtitle": "Birthplace of the Player System",
-        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1400&q=80",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBijI-bu8IShgKNV69f2ALUn_XfND4qmgNz9v7RD1Q6nHQ0856gHvUCsqXRKuqA3Vgt2atCCQQpMSyuN3THl0zqIrLunGQ9L0uhCord0M&s=10",
         "tag": "SACRED AWAKENING",
         "caption": "Sacrificing himself to save his party before the smiling stone god statue, Jinwoo triggered the hidden 'Courage of the Weak' quest and received the System."
       },
       {
         "title": "The Shadow Army Sovereign Domain",
         "subtitle": "Army of Ten Million Immortal Shadows",
-        "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1400&q=80",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsprSOKqrtBgm0fDB9jK8FfEziT4aJ-4J_Dq_fYLfgdg&s=10",
         "tag": "SHADOW MONARCH DOMAIN",
         "caption": "Commanding the immortal legion led by Marshall Bellion, General Igris, and Beru, Jinwoo stores entire armies within his shadow realm."
       },
       {
         "title": "The War of the Monarchs",
         "subtitle": "Clash of Sovereign Extinction",
-        "image": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1400&q=80",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsprSOKqrtBgm0fDB9jK8FfEziT4aJ-4J_Dq_fYLfgdg&s=10",
         "tag": "MULTIVERSAL CLIMAX",
         "caption": "Embracing Ashborn's full sovereign heart, Jinwoo transcends human mortality to battle the Dragon Monarch Antares and save Earth from extinction."
       }
@@ -954,7 +1154,7 @@ export const charactersData = [
       "Usurper",
       "Hope of Paradis"
     ],
-    "portrait": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80",
+    "portrait": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIOBY7c_FiS2dyZRPYpEZI3ZskbDwu5YVqhJjmhbEnjw&s=10",
     "backgroundImage": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80",
     "species": "Eldian Titan Shifter",
     "affiliations": [
@@ -1323,7 +1523,30 @@ export const charactersData = [
   }
 ];
 
-// 5. CURATED MEDIA DATA
+// =============================================================================
+// SECTION 5: MEDIA & ENTERTAINMENT DATABASE (mediaData)
+// What this does:
+//   • Master array containing all cinema, TV series, anime, manga, manhwa,
+//     webnovels, books, and cyberfiction works across all indexed universes.
+// Where it's used:
+//   • MediaDiscoveryPage.jsx, MediaDetailPage.jsx, CyberfictionPage.jsx, SearchModal.jsx
+//
+// WHAT EACH PROPERTY IN A MEDIA OBJECT IS FOR:
+// ─────────────────────────────────────────────────────────────────────────────
+//   • "id" & "slug": Unique ID and URL slug for "/media/:slug".
+//   • "type":        Format code matching `mediaCategories.id` ("movie", "anime", "manga").
+//   • "category":    Human-readable display category (e.g. "Cinema & Movies", "Manhwa").
+//   • "universeId":  Foreign key linking this film or book to its fictional universe.
+//   • "releaseYear": Year the work premiered or was published.
+//   • "genres":      Genre tags used by filter bars (e.g. ["Action", "Sci-Fi", "Cyberpunk"]).
+//   • "synopsis":    Plot summary describing the story arc.
+//   • "coverImage":  The poster, volume cover, or key visual.
+//   • "viewingOrder": WHAT VIEWING ORDER IS FOR:
+//                    Tells the user the exact recommended chronological order to
+//                    watch/read the universe (e.g. "Phase 1 - Film 1" or "Arc 2 - Volume 5").
+//   • "characterIds": Array linking character profiles that star in this work.
+//   • "featured":    Boolean determining if this title appears in discovery spotlights.
+// =============================================================================
 export const mediaData = [
   {
     "id": "iron-man-1",
@@ -1506,7 +1729,7 @@ export const mediaData = [
       "Fantasy",
       "Supernatural"
     ],
-    "coverImage": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=700&q=80",
+    "coverImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBijI-bu8IShgKNV69f2ALUn_XfND4qmgNz9v7RD1Q6nHQ0856gHvUCsqXRKuqA3Vgt2atCCQQpMSyuN3THl0zqIrLunGQ9L0uhCord0M&s=10",
     "synopsis": "In a world where hunters must battle deadly monsters to protect humanity, Sung Jinwoo struggles as the weakest hunter until a secret quest gives him the unique ability to level up infinitely.",
     "characterIds": [
       "sung-jinwoo"
@@ -1695,7 +1918,7 @@ export const mediaData = [
       "Sci-Fi",
       "Web3"
     ],
-    "coverImage": "/cyberfiction/male0001.png",
+    "coverImage": resolveAsset("cyberfiction/male0001.png"),
     "synopsis": "Cyberfiction aims to be a decentralized community that can create new values and profits through play in the virtual world. Make a story, take a chance, build and own, and maintain good humanity in the not-too-distant future.",
     "characterIds": [],
     "viewingOrder": "Core Genesis Narrative",
@@ -1721,7 +1944,7 @@ export const mediaData = [
       "Metaverse",
       "Futurism"
     ],
-    "coverImage": "/cyberfiction/male0150.png",
+    "coverImage": resolveAsset("cyberfiction/male0150.png"),
     "synopsis": "Throw away age, gender, region, and status. Don't compete, don't fight, cooperate and share with each other. Cyberfield is our playground — an expansive collective reality where human dreamers co-exist with artificial minds.",
     "characterIds": [],
     "viewingOrder": "Playground Chronicle 1",
@@ -1747,7 +1970,7 @@ export const mediaData = [
       "Artificial Intelligence",
       "Decker Lore"
     ],
-    "coverImage": "/cyberfiction/male0280.png",
+    "coverImage": resolveAsset("cyberfiction/male0280.png"),
     "synopsis": "A tribute to the origins of cyberfiction literature: consensual hallucinations experienced daily by billions of legitimate operators in every nation. Graphical representations of data abstracted from the banks of every computer in the human system.",
     "characterIds": [],
     "viewingOrder": "Historical Cyber Matrix",
@@ -1757,7 +1980,17 @@ export const mediaData = [
   }
 ];
 
-// 6. CURATED ARTICLES DATA
+// =============================================================================
+// SECTION 6: WIKI LORE ARTICLES DATABASE (articlesData)
+// What this does:
+//   • Master array containing deep editorial encyclopedia lore articles.
+//   • Covers legendary artifacts (Infinity Stones, Kamish's Wrath), metaphysical systems
+//     (The System, Force Cosmology), organizations, and primordial magic lore.
+//   • Each entry stores: id, slug, title, type, category, universeId, summary,
+//     inDepthLore sections, keyProperties, historicalWielders, and related article links.
+// Where it's used:
+//   • WikiArticlePage.jsx, HomePage.jsx, UniversePage.jsx, SearchModal.jsx
+// =============================================================================
 export const articlesData = [
   {
     "id": "infinity-stones",
@@ -1965,7 +2198,19 @@ export const articlesData = [
   }
 ];
 
-// 7. CONTENT SERVICE (Helper query methods)
+// =============================================================================
+// SECTION 7: CONTENT QUERY SERVICE (contentService)
+// What this does:
+//   • Acts as the application's clean ORM / data-access layer.
+//   • Provides helper query methods so pages can fetch data without manual loops:
+//       - Universes: getAllUniverses, getFeaturedUniverses, getUniverseBySlug
+//       - Characters: getAllCharacters, getCharacterBySlug, getCharactersByUniverse
+//       - Media: getAllMedia, getMediaByType, getMediaBySlug, getCyberfictionMedia
+//       - Articles: getAllArticles, getArticleBySlug, getArticlesByUniverse
+//       - Metadata counts & aggregations: getGlobalStats
+// Where it's used:
+//   • Consumed by practically every page and component across the app.
+// =============================================================================
 export const contentService = {
   // Universes
   getAllUniverses: () => universesData,
@@ -2011,7 +2256,20 @@ export const contentService = {
   }
 };
 
-// 8. SEARCH SERVICE (Universal multi-entity search)
+// =============================================================================
+// SECTION 8: GLOBAL MULTI-INDEX SEARCH SERVICE (searchService)
+// What this does:
+//   • Powers the global search bar and ⌘K search modal.
+//   • Takes a search text query and searches simultaneously across 4 datasets:
+//       1. Universes (name, description, tagline)
+//       2. Characters (name, realName, aliases, biography)
+//       3. Media (title, synopsis, genres)
+//       4. Articles (title, summary)
+//   • Supports filtering by universeId and entity type (all, universe, character, media, article).
+//   • Returns standardized result objects grouped by category with total counts.
+// Where it's used:
+//   • SearchModal.jsx, SearchPage.jsx
+// =============================================================================
 export const searchService = {
   search: (query, { type = "all", universeId = "all" } = {}) => {
     if (!query || typeof query !== "string") {

@@ -1,0 +1,260 @@
+/* =============================================================================
+ * CYBERFICTION FULLPAGE SCROLL EXPERIENCE
+ * Strictly scoped under .cyberfiction-scroll-view
+ * ============================================================================= */
+
+.cyberfiction-scroll-view {
+  position: relative;
+  width: 100%;
+  background-color: #f1f1f1;
+  color: #111111;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+  margin: -32px -24px; /* Pull outside normal app padding if any */
+  min-height: 100vh;
+}
+
+/* Fixed Persistent 3D Canvas in background */
+#cyber-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Fixed Cyber Nav */
+#cyber-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 100;
+  background: rgba(241, 241, 241, 0.7);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#cyber-nav > h3 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #000;
+}
+
+#cyber-nav > button {
+  padding: 8px 20px;
+  border-radius: 50px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#cyber-nav > button:hover {
+  background-color: #333;
+  transform: translateY(-1px);
+}
+
+/* Loading Banner */
+.cyber-loading-banner {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  background: #000;
+  color: #00f0ff;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 4px 16px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+}
+
+/* Main Container holding all scroll sections */
+#cyber-main {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+/* Each Section is 100vh */
+.cyber-scroll-section {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Marquee Loop on Page 0 */
+#cyber-loop {
+  display: flex;
+  position: absolute;
+  top: 25%;
+  width: 100%;
+  font-size: clamp(40px, 7vw, 100px);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+#cyber-loop > h1 {
+  font-weight: 400;
+  animation: cyberAnim 15s linear infinite;
+  padding-right: 40px;
+}
+
+#cyber-loop > h1 > span {
+  -webkit-text-stroke: 1.5px #000;
+  color: transparent;
+  font-weight: 600;
+}
+
+@keyframes cyberAnim {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.cyber-intro-text {
+  position: absolute;
+  top: 52%;
+  left: 6%;
+  z-index: 3;
+}
+
+.cyber-intro-text h3 {
+  font-weight: 400;
+  color: #7c7c7c;
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.6;
+}
+
+.cyber-intro-text h4 {
+  margin-top: 24px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #000;
+  letter-spacing: 0.05em;
+}
+
+/* PAGE 1 TEXT */
+#cyber-right-text {
+  position: absolute;
+  top: 30%;
+  left: 8%;
+  z-index: 3;
+}
+
+#cyber-right-text > h3 {
+  font-weight: 400;
+  color: #7c7c7c;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#cyber-right-text > h1 {
+  line-height: 1.25;
+  font-size: clamp(32px, 4vw, 55px);
+  font-weight: 800;
+  color: #000;
+}
+
+#cyber-left-text {
+  position: absolute;
+  top: 52%;
+  right: 8%;
+  text-align: right;
+  z-index: 3;
+}
+
+#cyber-left-text > h1 {
+  font-size: clamp(32px, 4vw, 55px);
+  line-height: 1.25;
+  font-weight: 800;
+  color: #000;
+}
+
+#cyber-left-text > h3 {
+  color: #7c7c7c;
+  font-weight: 400;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* PAGE 2 TEXT */
+#cyber-text1 {
+  position: absolute;
+  top: 25%;
+  left: 8%;
+  z-index: 3;
+}
+
+#cyber-text1 > h3 {
+  color: #7c7c7c;
+  font-weight: 400;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#cyber-text1 > h1 {
+  font-size: clamp(38px, 5vw, 65px);
+  line-height: 1.2;
+  font-weight: 800;
+  color: #000;
+}
+
+#cyber-text2 {
+  position: absolute;
+  top: 52%;
+  right: 8%;
+  text-align: right;
+  max-width: 580px;
+  z-index: 3;
+}
+
+#cyber-text2 > p {
+  color: #555555;
+  font-weight: 400;
+  font-size: clamp(13px, 1.3vw, 16px);
+  line-height: 1.7;
+}
+
+/* PAGE 3 TEXT */
+#cyber-text3 {
+  position: absolute;
+  top: 35%;
+  right: 10%;
+  text-align: right;
+  z-index: 3;
+}
+
+#cyber-text3 > h3 {
+  color: #7c7c7c;
+  font-weight: 400;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#cyber-text3 > h1 {
+  font-size: clamp(45px, 6vw, 75px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #000;
+}

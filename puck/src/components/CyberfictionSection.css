@@ -1,41 +1,28 @@
 /* =============================================================================
- * CYBERFICTION DEDICATED HOMEPAGE SECTION
- * Visually distinct from Novels, Manhwa, Manhua, and traditional Media Cards.
- * Features high-tech neon styling, marquee ticker, and interactive canvas preview.
+ * CYBERFICTION DEDICATED SECTION — TOTAL WHITE DESIGN
+ * Blended seamlessly with the white page aesthetic.
  * ============================================================================= */
 
 .cyber-section-root {
   position: relative;
-  border-radius: 24px;
-  background: radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.08) 0%, rgba(12, 13, 20, 0.98) 50%, rgba(112, 0, 255, 0.08) 100%);
-  border: 1px solid rgba(0, 240, 255, 0.25);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 240, 255, 0.2);
+  border-radius: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   padding: 40px 36px;
   margin-bottom: 70px;
   overflow: hidden;
 }
 
-/* Neon corner accents */
+/* Subtle corner accents */
 .cyber-section-root::before {
   content: "";
   position: absolute;
-  top: -2px;
+  top: 0;
   left: 30px;
   width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, #00f0ff, transparent);
-  box-shadow: 0 0 12px #00f0ff;
-}
-
-.cyber-section-root::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  right: 30px;
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(270deg, #7000ff, transparent);
-  box-shadow: 0 0 12px #7000ff;
+  height: 3px;
+  background: linear-gradient(90deg, #0f172a, transparent);
 }
 
 /* Header */
@@ -54,9 +41,9 @@
   gap: 10px;
   padding: 5px 14px;
   border-radius: 999px;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  color: #00f0ff;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #0f172a;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -68,8 +55,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #00f0ff;
-  box-shadow: 0 0 8px #00f0ff;
+  background: #0284c7;
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
   animation: cyberPulse 2s infinite ease-in-out;
 }
 
@@ -81,27 +68,28 @@
   50% {
     transform: scale(1.3);
     opacity: 1;
-    box-shadow: 0 0 14px #00f0ff;
   }
 }
 
 .cyber-section-title {
   font-size: clamp(26px, 3.2vw, 38px);
   font-weight: 900;
-  color: #ffffff;
+  color: #0f172a;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
 .cyber-section-title b {
-  color: #00f0ff;
-  text-shadow: 0 0 16px rgba(0, 240, 255, 0.5);
+  color: #000000;
+  text-decoration: underline;
+  text-decoration-color: #E2E8F0;
+  text-underline-offset: 6px;
 }
 
 .cyber-section-subtitle {
   font-size: 15px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: #64748b;
   max-width: 650px;
   margin-top: 8px;
 }
@@ -112,28 +100,28 @@
   gap: 10px;
   padding: 12px 24px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #00f0ff 0%, #00a8ff 100%);
-  color: #0c0d12;
-  font-size: 14px;
+  background: #0f172a;
+  color: #FFFFFF;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-decoration: none;
   transition: all 0.25s ease;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
 }
 
 .cyber-cta-btn:hover {
   transform: translateY(-2px);
-  background: #ffffff;
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
-  color: #000;
+  background: #334155;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  color: #FFFFFF;
 }
 
 /* Interactive Ticker Bar */
 .cyber-ticker-bar {
-  background: rgba(0, 0, 0, 0.4);
-  border-top: 1px solid rgba(0, 240, 255, 0.15);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  border-bottom: 1px solid #E2E8F0;
   padding: 10px 0;
   overflow: hidden;
   white-space: nowrap;
@@ -150,14 +138,14 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #a0aec0;
+  color: #475569;
   display: inline-flex;
   align-items: center;
   gap: 12px;
 }
 
 .cyber-ticker-item span {
-  color: #00f0ff;
+  color: #0284c7;
 }
 
 @keyframes cyberTicker {
@@ -177,9 +165,9 @@
 /* Left: Interactive Canvas Card */
 .cyber-canvas-card {
   position: relative;
-  background: #08090d;
+  background: #F8FAFC;
   border-radius: 18px;
-  border: 1px solid rgba(0, 240, 255, 0.25);
+  border: 1px solid #E2E8F0;
   overflow: hidden;
   height: 380px;
   display: flex;
@@ -187,7 +175,7 @@
   justify-content: flex-end;
   padding: 24px;
   cursor: grab;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
 .cyber-canvas-card:active {
@@ -207,13 +195,14 @@
 .cyber-canvas-overlay {
   position: relative;
   z-index: 5;
-  background: linear-gradient(180deg, transparent 0%, rgba(8, 9, 13, 0.95) 80%);
+  background: linear-gradient(180deg, transparent 0%, rgba(248, 250, 252, 0.95) 80%);
   padding-top: 40px;
 }
 
 .cyber-canvas-hud {
+  font-family: var(--font-mono, monospace);
   font-size: 11px;
-  color: #00f0ff;
+  color: #0f172a;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin-bottom: 6px;
@@ -222,7 +211,7 @@
 
 .cyber-canvas-tip {
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -239,8 +228,8 @@
   display: flex;
   gap: 18px;
   align-items: center;
-  background: rgba(18, 20, 32, 0.55);
-  border: 1px solid rgba(0, 240, 255, 0.12);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 16px;
   transition: all 0.25s ease;
@@ -248,9 +237,10 @@
 }
 
 .cyber-work-item:hover {
-  background: rgba(0, 240, 255, 0.08);
-  border-color: rgba(0, 240, 255, 0.4);
-  transform: translateX(6px);
+  background: #F8FAFC;
+  border-color: #0f172a;
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .cyber-work-thumb {
@@ -258,8 +248,8 @@
   height: 72px;
   border-radius: 10px;
   object-fit: cover;
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  background: #000;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
   flex-shrink: 0;
 }
 
@@ -270,13 +260,13 @@
 .cyber-work-info h4 {
   font-size: 16px;
   font-weight: 700;
-  color: #ffffff;
+  color: #0f172a;
   margin-bottom: 4px;
 }
 
 .cyber-work-info p {
   font-size: 13px;
-  color: #94a3b8;
+  color: #64748b;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -288,8 +278,9 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgba(0, 240, 255, 0.15);
-  color: #00f0ff;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #0f172a;
   font-size: 10px;
   font-weight: 700;
   margin-bottom: 4px;
